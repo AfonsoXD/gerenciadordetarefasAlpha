@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://img.icons8.com/ios/50/000000/calendar.png"/>
+</head>
+<body>
+    <div class="container">
+        <h1>GERENCIADOR DE TAREFAS</h1>
+
+        <form id="formTarefa">
+            <input type="text" id="descricao" placeholder="Digite a descrição da tarefa" required>
+            <input type="text" id="hora" placeholder="Hora (HH:mm)" required>
+            <input type="date" id="data" placeholder="Data (dd/mm/yyyy)" required> <!-- Novo campo de data -->
+            <input type="text" id="categoriaPersonalizada" placeholder="Digite a categoria (opcional)">
+            <button type="submit" class="botao-adicionar">Adicionar Tarefa</button>
+        </form>
+
+        <ul id="tarefas"></ul>
+    </div>
+
+   
+    <div id="modalEditar" class="modal">
+        <div class="modal-content">
+            <h2>Editar Tarefa</h2>
+            <form id="formEditarTarefa">
+                <input type="text" id="editarDescricao" placeholder="Descrição" required>
+                <input type="text" id="editarHora" placeholder="Hora (HH:mm)" required>
+                <input type="date" id="editarData" placeholder="Data (dd/mm/yyyy)" required> <!-- Novo campo de data -->
+                <input type="text" id="editarCategoriaPersonalizada" placeholder="Categoria personalizada" />
+                <button type="submit" class="botao-editar">Salvar</button>
+            </form>
+            <button onclick="fecharModal()" class="botao-cancelar">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
