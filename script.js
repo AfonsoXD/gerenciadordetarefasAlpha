@@ -1,4 +1,3 @@
-
 const formTarefa = document.getElementById("formTarefa");
 const descricaoInput = document.getElementById("descricao");
 const horaInput = document.getElementById("hora");
