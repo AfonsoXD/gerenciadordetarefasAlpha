@@ -1,62 +1,85 @@
 const express = require('express');
 const cors = require('cors');
+const mysql = require('mysql2');
 const app = express();
 const PORT = 5000;
+
+L
+const db = mysql.createConnection({
+    host: 'localhost', 
+    user: 'seu_usuario', 
+    password: 'sua_senha', 
+    database: 'GerenciadorTarefas', 
+});
+
+
+db.connect(err => {
+    if (err) {
+        console.error('Erro ao conectar ao banco de dados:', err);
+        return;
+    }
+    console.log('Conectado ao banco de dados MySQL.');
+});
 
 app.use(cors());
 app.use(express.json());
 
-let tarefas = [
-    { id: 1, descricao: 'Estudar Node.js', categoria: 'Estudo', status: 'pendente' },
-    { id: 2, descricao: 'Fazer compras', categoria: 'Casa', status: 'pendente' },
-];
-
 
 app.get('/tarefas', (req, res) => {
-    res.json(tarefas);
+    db.query('SELECT * FROM tarefas', (err, results) => {
+        if (err) {
+            return res.status(500).send('Erro ao buscar tarefas');
+        }
+        res.json(results);
+    });
 });
 
 
 app.post('/tarefas', (req, res) => {
-    const novaTarefa = req.body;
-    novaTarefa.id = tarefas.length + 1;
-    novaTarefa.status = 'pendente';
-    tarefas.push(novaTarefa);
-    res.status(201).json(novaTarefa);
+    const { descricao, categoria } = req.body;
+    const sql = 'INSERT INTO tarefas (descricao, categoria) VALUES (?, ?)';
+    db.query(sql, [descricao, categoria], (err, result) => {
+        if (err) {
+            return res.status(500).send('Erro ao adicionar tarefa');
+        }
+        const novaTarefa = { id: result.insertId, descricao, categoria, status: 'pendente' };
+        res.status(201).json(novaTarefa);
+    });
 });
 
 
 app.delete('/tarefas/:id', (req, res) => {
     const { id } = req.params;
-    tarefas = tarefas.filter(tarefa => tarefa.id !== parseInt(id));
-    res.status(204).send();
+    db.query('DELETE FROM tarefas WHERE id = ?', [id], (err, result) => {
+        if (err) {
+            return res.status(500).send('Erro ao excluir tarefa');
+        }
+        res.status(204).send();
+    });
 });
 
 
 app.put('/tarefas/:id', (req, res) => {
     const { id } = req.params;
-    const tarefa = tarefas.find(t => t.id === parseInt(id));
-    if (tarefa) {
-        tarefa.status = 'concluído';
-        res.json(tarefa);
-    } else {
-        res.status(404).send('Tarefa não encontrada');
-    }
+    db.query('UPDATE tarefas SET status = ? WHERE id = ?', ['concluído', id], (err, result) => {
+        if (err) {
+            return res.status(500).send('Erro ao concluir tarefa');
+        }
+        res.status(200).send('Tarefa concluída');
+    });
 });
 
 
 app.put('/tarefas/:id/editar', (req, res) => {
     const { id } = req.params;
     const { descricao, categoria } = req.body;
-    const tarefa = tarefas.find(t => t.id === parseInt(id));
-
-    if (tarefa) {
-        if (descricao) tarefa.descricao = descricao;
-        if (categoria) tarefa.categoria = categoria;
-        res.json(tarefa);
-    } else {
-        res.status(404).send('Tarefa não encontrada');
-    }
+    const sql = 'UPDATE tarefas SET descricao = ?, categoria = ? WHERE id = ?';
+    db.query(sql, [descricao, categoria, id], (err, result) => {
+        if (err) {
+            return res.status(500).send('Erro ao editar tarefa');
+        }
+        res.status(200).send('Tarefa editada com sucesso');
+    });
 });
 
 
